@@ -1,1260 +1,1626 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Câmera Digital Retro Pixelizada</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Instituto Luyara — Escola de Putiferagem</title>
+<style>
+:root {
+  --ink: #1a1620;
+  --muted: #6b6470;
+  --gold: #b58a35;
+  --gold-light: #e5c77b;
+  --paper: #fbfaf7;
+  --purple: #39234d;
+  --purple-dark: #2a1a38;
+  --lav: #f3eef7;
+  --sidebar-w: 280px;
+  --radius: 12px;
+}
 
-        :root {
-            --camera-black: #1a1a1a;
-            --camera-gray: #2d2d2d;
-            --camera-silver: #4a4a4a;
-            --camera-highlight: #5a5a5a;
-            --camera-accent: #3a8cff;
-            --camera-accent-dark: #2a6cd6;
-            --camera-text: #f0f0f0;
-            --camera-text-dim: #aaaaaa;
-        }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+  display: flex;
+  min-height: 100vh;
+}
 
-        body {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            color: var(--camera-text);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            overflow-x: hidden;
-        }
+/* ========== SIDEBAR ========== */
+.sidebar {
+  width: var(--sidebar-w);
+  background: linear-gradient(180deg, #2a1a38 0%, #1e1428 100%);
+  color: #f5f0e8;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  transition: transform .3s ease;
+  box-shadow: 4px 0 24px rgba(0,0,0,.25);
+}
 
-        .header {
-            text-align: center;
-            margin-bottom: 20px;
-            width: 100%;
-            max-width: 900px;
-        }
+.sidebar-header {
+  padding: 28px 20px 20px;
+  text-align: center;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
 
-        .header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 5px;
-            background: linear-gradient(90deg, #ff6b6b, #ffd166, #06d6a0, #118ab2);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-        }
+.profile-photo-wrap {
+  position: relative;
+  width: 110px;
+  height: 110px;
+  margin: 0 auto 14px;
+  cursor: pointer;
+}
 
-        .header p {
-            color: var(--camera-text-dim);
-            font-size: 1.1rem;
-        }
+.profile-photo {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--gold);
+  background: #3d2a4f;
+  display: block;
+}
 
-        .container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
-            max-width: 900px;
-            gap: 20px;
-        }
+.camera-btn {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 34px;
+  height: 34px;
+  background: var(--gold);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  border: 2px solid #2a1a38;
+  cursor: pointer;
+  transition: transform .2s;
+}
+.camera-btn:hover { transform: scale(1.1); }
+.camera-btn svg { width: 16px; height: 16px; fill: #1a1620; }
 
-        /* Estilo principal da câmera */
-        .camera-body {
-            width: 100%;
-            max-width: 850px;
-            background-color: var(--camera-black);
-            border-radius: 20px;
-            padding: 25px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
-            border: 1px solid var(--camera-highlight);
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
+.student-name {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  letter-spacing: .3px;
+}
 
-        /* Visor da câmera */
-        .camera-viewfinder {
-            background-color: #000;
-            border-radius: 10px;
-            overflow: hidden;
-            position: relative;
-            border: 2px solid var(--camera-silver);
-            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.7);
-            aspect-ratio: 4/3;
-            width: 100%;
-        }
+.student-level {
+  font-size: 12px;
+  color: var(--gold-light);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
 
-        #videoCanvas {
-            width: 100%;
-            height: 100%;
-            display: block;
-            image-rendering: pixelated;
-            image-rendering: crisp-edges;
-        }
+.level-badge {
+  display: inline-block;
+  background: rgba(181,138,53,.2);
+  border: 1px solid var(--gold);
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  margin-top: 6px;
+}
 
-        .viewfinder-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            padding: 15px;
-        }
+nav.side-nav {
+  flex: 1;
+  padding: 20px 0;
+  overflow-y: auto;
+}
 
-        .viewfinder-top-bar, .viewfinder-bottom-bar {
-            display: flex;
-            justify-content: space-between;
-            width: 100%;
-            background-color: rgba(0, 0, 0, 0.6);
-            padding: 8px 12px;
-            border-radius: 5px;
-        }
+nav.side-nav a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 24px;
+  color: #d8cfc0;
+  text-decoration: none;
+  font-size: 13px;
+  letter-spacing: .8px;
+  transition: all .2s;
+  border-left: 3px solid transparent;
+}
+nav.side-nav a:hover,
+nav.side-nav a.active {
+  background: rgba(255,255,255,.06);
+  color: #fff;
+  border-left-color: var(--gold);
+}
 
-        .viewfinder-info {
-            display: flex;
-            gap: 15px;
-            font-size: 0.85rem;
-            color: white;
-            font-weight: 500;
-        }
+.sidebar-footer {
+  padding: 16px 20px;
+  border-top: 1px solid rgba(255,255,255,.08);
+  font-size: 11px;
+  color: #9a8f9e;
+  text-align: center;
+}
 
-        .viewfinder-info span {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
+/* Toggle mobile */
+.menu-toggle {
+  display: none;
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 110;
+  background: var(--purple);
+  color: white;
+  border: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  font-size: 20px;
+  cursor: pointer;
+}
 
-        .focus-box {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 120px;
-            height: 80px;
-            border: 2px solid rgba(255, 255, 255, 0.7);
-            border-radius: 5px;
-            pointer-events: none;
-        }
+/* ========== MAIN ========== */
+.main {
+  margin-left: var(--sidebar-w);
+  flex: 1;
+  min-height: 100vh;
+}
 
-        /* Controles da câmera */
-        .camera-controls {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-        }
+.notice {
+  background: #251b2d;
+  color: #f8edcf;
+  text-align: center;
+  padding: 8px 14px;
+  font: 11px/1.4 Arial, sans-serif;
+  letter-spacing: 1.3px;
+}
 
-        .control-group {
-            background-color: var(--camera-gray);
-            border-radius: 10px;
-            padding: 15px;
-            border: 1px solid var(--camera-highlight);
-        }
+/* Hero */
+.hero {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 60px 40px 50px;
+  display: grid;
+  grid-template-columns: 1.1fr .9fr;
+  gap: 40px;
+  align-items: center;
+}
 
-        .control-group h3 {
-            font-size: 1rem;
-            margin-bottom: 10px;
-            color: var(--camera-text-dim);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+.eyebrow {
+  font: 11px Arial, sans-serif;
+  letter-spacing: 2.5px;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
 
-        .control-group h3 i {
-            color: var(--camera-accent);
-        }
+h1 {
+  font-family: Georgia, serif;
+  font-size: clamp(36px, 5vw, 54px);
+  line-height: 1.1;
+  font-weight: normal;
+  margin-bottom: 18px;
+  letter-spacing: -1px;
+}
+h1 em { color: var(--gold); font-style: normal; }
 
-        /* Botões de controle */
-        .control-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
+.lead {
+  font-size: 16px;
+  line-height: 1.75;
+  color: var(--muted);
+  max-width: 480px;
+  margin-bottom: 28px;
+}
 
-        .btn {
-            background-color: var(--camera-silver);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 10px 15px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            font-weight: 600;
-            transition: all 0.2s ease;
-            flex: 1;
-            min-width: 120px;
-        }
+.btn {
+  border: 0;
+  background: var(--purple);
+  color: white;
+  padding: 13px 22px;
+  border-radius: 6px;
+  font: 12px Arial, sans-serif;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: .2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.btn:hover { background: #4a2d68; transform: translateY(-1px); }
+.btn.gold { background: var(--gold); color: #1a1620; }
+.btn.gold:hover { background: #c49a42; }
+.btn.outline {
+  background: transparent;
+  color: var(--purple);
+  border: 1px solid #b9a8c4;
+}
+.btn.sm { padding: 9px 16px; font-size: 11px; }
 
-        .btn:hover {
-            background-color: var(--camera-highlight);
-            transform: translateY(-2px);
-        }
+.hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
 
-        .btn:active {
-            transform: translateY(0);
-        }
+.hero-card {
+  background: linear-gradient(145deg, #f6f0e4, #e7d9bb);
+  border: 1px solid #c7a75e;
+  border-radius: 12px;
+  padding: 28px;
+  text-align: center;
+  box-shadow: 12px 14px 0 #eee8dd;
+}
+.hero-card .seal {
+  width: 90px;
+  height: 90px;
+  border: 3px double var(--gold);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 40px;
+  color: var(--gold);
+  margin: 0 auto 16px;
+}
+.hero-card h3 {
+  font-family: Georgia, serif;
+  font-size: 28px;
+  margin-bottom: 6px;
+}
+.hero-card p {
+  font-size: 13px;
+  color: #6c6252;
+  line-height: 1.6;
+}
 
-        .btn-primary {
-            background-color: var(--camera-accent);
-        }
+/* Stats */
+.stats {
+  background: var(--purple);
+  color: white;
+  padding: 28px 40px;
+}
+.stats-inner {
+  max-width: 900px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  text-align: center;
+  gap: 20px;
+}
+.stat strong {
+  display: block;
+  color: var(--gold-light);
+  font-size: 28px;
+  font-weight: 500;
+  font-family: Georgia, serif;
+}
+.stat span {
+  font: 11px Arial, sans-serif;
+  letter-spacing: 1.2px;
+  color: #d4c8dc;
+}
 
-        .btn-primary:hover {
-            background-color: var(--camera-accent-dark);
-        }
+/* Content sections */
+section.content {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 70px 40px;
+}
 
-        .btn-danger {
-            background-color: #ff4757;
-        }
+.section-head {
+  text-align: center;
+  max-width: 580px;
+  margin: 0 auto 40px;
+}
+.section-head h2 {
+  font-family: Georgia, serif;
+  font-size: 36px;
+  font-weight: normal;
+  margin: 10px 0;
+}
+.section-head p {
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.7;
+}
 
-        .btn-danger:hover {
-            background-color: #ff3742;
-        }
+/* Course cards */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
 
-        .btn-success {
-            background-color: #2ed573;
-        }
+.course {
+  background: white;
+  border: 1px solid #e9e2d7;
+  border-radius: var(--radius);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow .2s, transform .2s;
+  position: relative;
+}
+.course:hover {
+  box-shadow: 0 10px 30px rgba(57,35,77,.08);
+  transform: translateY(-2px);
+}
+.course.completed {
+  border-color: var(--gold);
+  background: linear-gradient(180deg, #fffdf8 0%, #fff 100%);
+}
+.course .badge-done {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: var(--gold);
+  color: #1a1620;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 20px;
+  letter-spacing: .5px;
+}
+.course .number {
+  font: 11px Arial, sans-serif;
+  color: var(--gold);
+  letter-spacing: 1.5px;
+}
+.course h3 {
+  font-family: Georgia, serif;
+  font-size: 20px;
+  font-weight: normal;
+  margin: 12px 0 8px;
+}
+.course p {
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--muted);
+  flex-grow: 1;
+  margin-bottom: 16px;
+}
+.course-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
 
-        .btn-success:hover {
-            background-color: #25c464;
-        }
+/* About */
+.about {
+  background: var(--lav);
+  padding: 70px 40px;
+}
+.about-inner {
+  max-width: 900px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: .7fr 1.3fr;
+  gap: 50px;
+  align-items: center;
+}
+.about-mark {
+  border: 1px solid #cbb6d7;
+  border-radius: var(--radius);
+  padding: 32px;
+  text-align: center;
+  background: #fffafc;
+}
+.about-mark .crown { font-size: 52px; color: var(--gold); }
+.about-mark h3 {
+  font-family: Georgia, serif;
+  font-size: 28px;
+  margin: 8px 0;
+}
+.about-copy h2 {
+  font-family: Georgia, serif;
+  font-size: 34px;
+  font-weight: normal;
+  margin-bottom: 14px;
+}
+.about-copy p {
+  font-size: 15px;
+  line-height: 1.85;
+  color: #5c5464;
+}
+.quote {
+  border-left: 3px solid var(--gold);
+  padding-left: 16px;
+  margin-top: 20px;
+  font-style: italic;
+  color: #4a3d56;
+}
 
-        /* Sliders e controles deslizantes */
-        .slider-container {
-            margin-bottom: 15px;
-        }
+/* CTA */
+.cta {
+  max-width: 900px;
+  margin: 60px auto;
+  padding: 48px 40px;
+  text-align: center;
+  background: #f5efe3;
+  border: 1px solid #dfd0b0;
+  border-radius: var(--radius);
+}
+.cta h2 {
+  font-family: Georgia, serif;
+  font-size: 32px;
+  font-weight: normal;
+  margin: 10px 0 12px;
+}
 
-        .slider-label {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 5px;
-            font-size: 0.9rem;
-        }
+/* Footer */
+footer {
+  background: #211a25;
+  color: #e8dde8;
+  padding: 36px 40px;
+  margin-left: var(--sidebar-w);
+}
+.foot {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.foot strong { font-size: 20px; font-family: Georgia, serif; }
+.foot small {
+  display: block;
+  color: #b0a3b5;
+  font-size: 11px;
+  letter-spacing: 1px;
+  margin-top: 4px;
+}
+.foot-note {
+  font-size: 12px;
+  color: #b0a3b5;
+  max-width: 380px;
+  line-height: 1.5;
+}
 
-        .slider {
-            width: 100%;
-            height: 8px;
-            border-radius: 4px;
-            background: var(--camera-silver);
-            outline: none;
-            -webkit-appearance: none;
-        }
+/* ========== MODALS ========== */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(20,14,28,.82);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  backdrop-filter: blur(4px);
+}
+.modal.show { display: flex; }
 
-        .slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: var(--camera-accent);
-            cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-        }
+.dialog {
+  width: min(100%, 520px);
+  background: #fffdf9;
+  border-radius: 14px;
+  padding: 32px;
+  position: relative;
+  max-height: 90vh;
+  overflow-y: auto;
+  border: 1px solid var(--gold-light);
+  box-shadow: 0 20px 60px rgba(0,0,0,.3);
+}
+.dialog h2 {
+  font-family: Georgia, serif;
+  font-size: 26px;
+  font-weight: normal;
+  margin-bottom: 6px;
+}
+.dialog .sub {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 20px;
+}
 
-        /* Filtros retro */
-        .filters-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 10px;
-        }
+.close {
+  position: absolute;
+  right: 16px;
+  top: 14px;
+  border: 0;
+  background: none;
+  font-size: 26px;
+  cursor: pointer;
+  color: #888;
+  line-height: 1;
+}
+.close:hover { color: #333; }
 
-        .filter-option {
-            background-color: var(--camera-silver);
-            border-radius: 8px;
-            padding: 10px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            border: 2px solid transparent;
-        }
+label {
+  display: block;
+  font-size: 11px;
+  letter-spacing: 1px;
+  margin: 16px 0 6px;
+  color: #5c5260;
+  text-transform: uppercase;
+}
+input, select, textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #ddd3c5;
+  border-radius: 6px;
+  background: white;
+  font: 14px system-ui, sans-serif;
+}
+input:focus, select:focus { outline: 2px solid var(--gold); border-color: transparent; }
 
-        .filter-option:hover {
-            background-color: var(--camera-highlight);
-            transform: translateY(-3px);
-        }
+.quiz-question {
+  margin-bottom: 22px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #eee;
+}
+.quiz-question h4 {
+  font-size: 15px;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+.quiz-options label {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 8px 0;
+  font-size: 14px;
+  text-transform: none;
+  letter-spacing: 0;
+  cursor: pointer;
+  color: var(--ink);
+}
+.quiz-options input { width: auto; margin-top: 3px; }
 
-        .filter-option.active {
-            border-color: var(--camera-accent);
-            background-color: rgba(58, 140, 255, 0.2);
-        }
+.lesson-box {
+  background: #f8f4ec;
+  border-radius: 8px;
+  padding: 18px;
+  margin-bottom: 22px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: #4a4350;
+}
 
-        .filter-name {
-            font-size: 0.9rem;
-            font-weight: 600;
-            margin-top: 5px;
-        }
+.progress-bar {
+  height: 6px;
+  background: #eee;
+  border-radius: 3px;
+  margin: 12px 0 20px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold), #d4a94a);
+  border-radius: 3px;
+  transition: width .4s ease;
+}
 
-        .filter-color-preview {
-            width: 100%;
-            height: 30px;
-            border-radius: 4px;
-            margin-bottom: 5px;
-        }
-
-        /* Galeria */
-        .gallery-container {
-            width: 100%;
-            max-width: 850px;
-            background-color: var(--camera-black);
-            border-radius: 20px;
-            padding: 25px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
-            border: 1px solid var(--camera-highlight);
-            display: none;
-        }
-
-        .gallery-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .gallery-images {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 15px;
-            max-height: 400px;
-            overflow-y: auto;
-            padding: 10px;
-        }
-
-        .gallery-image {
-            width: 100%;
-            aspect-ratio: 1;
-            object-fit: cover;
-            border-radius: 8px;
-            border: 2px solid var(--camera-silver);
-            cursor: pointer;
-            transition: transform 0.3s ease;
-        }
-
-        .gallery-image:hover {
-            transform: scale(1.05);
-            border-color: var(--camera-accent);
-        }
-
-        /* Indicadores de status */
-        .status-indicators {
-            display: flex;
-            justify-content: space-between;
-            background-color: rgba(0, 0, 0, 0.7);
-            padding: 10px 15px;
-            border-radius: 8px;
-            margin-top: 10px;
-        }
-
-        .status-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.9rem;
-        }
-
-        .battery-level {
-            width: 40px;
-            height: 18px;
-            background-color: var(--camera-silver);
-            border-radius: 3px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .battery-fill {
-            height: 100%;
-            background-color: #2ed573;
-            width: 80%;
-            transition: width 0.5s ease;
-        }
-
-        /* Rodapé */
-        .footer {
-            margin-top: 20px;
-            text-align: center;
-            color: var(--camera-text-dim);
-            font-size: 0.9rem;
-            width: 100%;
-            max-width: 900px;
-            padding-top: 15px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        /* Responsividade */
-        @media (max-width: 768px) {
-            .camera-controls {
-                grid-template-columns: 1fr;
-            }
-            
-            .filters-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-            
-            .btn {
-                min-width: 100px;
-            }
-            
-            .header h1 {
-                font-size: 1.8rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .camera-body {
-                padding: 15px;
-            }
-            
-            .filters-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .btn {
-                min-width: 80px;
-                padding: 8px 10px;
-                font-size: 0.9rem;
-            }
-            
-            .header h1 {
-                font-size: 1.5rem;
-            }
-        }
-
-        /* Modal para visualização de imagem */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.9);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-content {
-            max-width: 90%;
-            max-height: 90%;
-            border-radius: 10px;
-            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.7);
-        }
-
-        .modal-close {
-            position: absolute;
-            top: 20px;
-            right: 30px;
-            color: white;
-            font-size: 2.5rem;
-            cursor: pointer;
-            transition: color 0.3s;
-        }
-
-        .modal-close:hover {
-            color: var(--camera-accent);
-        }
-    </style>
+/* Responsive */
+@media (max-width: 900px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+  .sidebar.open { transform: translateX(0); }
+  .menu-toggle { display: grid; place-items: center; }
+  .main { margin-left: 0; }
+  footer { margin-left: 0; }
+  .hero { grid-template-columns: 1fr; padding: 40px 24px; }
+  .about-inner { grid-template-columns: 1fr; }
+  section.content { padding: 50px 24px; }
+  .stats-inner { grid-template-columns: 1fr; gap: 16px; }
+}
+</style>
 </head>
 <body>
-    <div class="header">
-        <h1>Câmera Pixel</h1>
-        <p>Uma briza, câmera com filtros inspirados em consoles clássicos, criador por K-leb</p>
+
+<button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+
+<!-- ========== SIDEBAR ========== -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="profile-photo-wrap" onclick="document.getElementById('photoInput').click()">
+      <img id="profilePhoto" class="profile-photo" src="" alt="Foto do aluno" style="display:none">
+      <div id="photoPlaceholder" class="profile-photo" style="display:grid;place-items:center;font-size:36px;color:#8a7a9a">♛</div>
+      <div class="camera-btn" title="Trocar foto">
+        <svg viewBox="0 0 24 24"><path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4z"/><path d="M9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/></svg>
+      </div>
+    </div>
+    <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="handlePhoto(this)">
+
+    <div class="student-name" id="sideName">Visitante</div>
+    <div class="student-level">Nível <span id="sideLevel">0</span></div>
+    <div class="level-badge" id="levelBadge">Iniciante</div>
+  </div>
+
+  <nav class="side-nav">
+    <a href="#inicio" class="active" onclick="setActive(this)">INÍCIO</a>
+    <a href="#cursos" onclick="setActive(this)">CURSOS</a>
+    <a href="#sobre" onclick="setActive(this)">A INSTITUIÇÃO</a>
+    <a href="#contato" onclick="setActive(this)">CONTATO</a>
+    <a href="#" onclick="openPortal(); return false" style="margin-top:12px;border-top:1px solid rgba(255,255,255,.08);padding-top:18px">PORTAL DO ALUNO</a>
+  </nav>
+
+  <div class="sidebar-footer">
+    Instituto Luyara<br>
+    Tradição • Putifera • Excelência
+  </div>
+</aside>
+
+<!-- ========== MAIN CONTENT ========== -->
+<div class="main">
+  <div class="notice">INSTITUIÇÃO FICTÍCIA • PROJETO DE ENTRETENIMENTO • 100% SERICIMOS</div>
+
+  <!-- HERO -->
+  <section class="hero" id="inicio">
+    <div>
+      <div class="eyebrow">União • Irmandade • Putifera</div>
+      <h1>Uma formação<br>à altura da sua <em>lenda.</em></h1>
+      <p class="lead">
+        Bem-vindo ao Instituto Luyara. Aqui formamos os grandes nomes da Putifaria com tradição, 
+        humor e um diploma que vale ouro (pelo menos no coração).
+      </p>
+      <div class="hero-actions">
+        <button class="btn gold" onclick="openPortal()">Acessar Portal</button>
+        <a class="btn outline" href="#cursos">Explorar cursos</a>
+      </div>
+    </div>
+    <div class="hero-card">
+      <div class="seal">♛</div>
+      <h3>Luyara</h3>
+      <p>Certificamos aqueles que transformam a putiferagem em verdadeira arte.</p>
+      <div style="margin-top:14px;color:var(--gold);font-size:18px">✦ ✦ ✦</div>
+    </div>
+  </section>
+
+  <div class="stats">
+    <div class="stats-inner">
+      <div class="stat"><strong>∞</strong><span>TRADIÇÃO ETERNA</span></div>
+      <div class="stat"><strong id="statLevel">0</strong><span>SEU NÍVEL ATUAL</span></div>
+      <div class="stat"><strong>0</strong><span>CHANCE DE SER SÉRIO</span></div>
+    </div>
+  </div>
+
+  <!-- CURSOS -->
+  <section class="content" id="cursos">
+    <div class="section-head">
+      <div class="eyebrow">Formação de elite</div>
+      <h2>Nossos cursos</h2>
+      <p>Cada curso possui uma aula rápida + um quiz. Passe no quiz para subir de nível e desbloquear o diploma.</p>
+    </div>
+    <div class="cards" id="courseCards"></div>
+  </section>
+
+  <!-- SOBRE -->
+  <section class="about" id="sobre">
+    <div class="about-inner">
+      <div class="about-mark">
+        <div class="crown">♛</div>
+        <h3>Luyara</h3>
+        <p style="font-size:11px;letter-spacing:2px;color:var(--muted);margin-top:6px">UNIÃO • IRMANDADE • PUTIFERA</p>
+      </div>
+      <div class="about-copy">
+        <div class="eyebrow">Nossa essência</div>
+        <h2>Mais que uma escola.<br>Uma irmandade.</h2>
+        <p>
+          O Instituto Luyara nasceu para reconhecer quem transforma qualquer ocasião em história memorável. 
+          Nossa tradição celebra amizade, ousadia e bom humor.
+        </p>
+        <p class="quote">“A putiferagem não se explica. Se vive, se aprende e se aperfeiçoa.”</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta" id="contato">
+    <div class="eyebrow">Sua jornada começa aqui</div>
+    <h2>Pronto para fazer parte da história?</h2>
+    <p style="color:var(--muted);margin:12px 0 24px">Cadastre-se, complete os quizzes e receba seu diploma oficial da Luyara.</p>
+    <button class="btn gold" onclick="openPortal()">Entrar no Portal do Aluno</button>
+  </section>
+
+  <footer>
+    <div class="foot">
+      <div>
+        <strong>♛ LUYARA</strong>
+        <small>INSTITUTO DE PUTIFARIA</small>
+      </div>
+      <div class="foot-note">
+        Site demonstrativo de escola fictícia criado para entretenimento. 
+        Não representa instituição real e não oferece certificados oficiais.
+      </div>
+    </div>
+  </footer>
+</div>
+
+<!-- ========== MODAL PORTAL / CADASTRO ========== -->
+<div class="modal" id="portalModal">
+  <div class="dialog">
+    <button class="close" onclick="closeModal('portalModal')">×</button>
+    <div class="eyebrow">Instituto Luyara</div>
+    <h2 id="portalTitle">Portal do Aluno</h2>
+    <p class="sub" id="portalSub">Faça seu cadastro ou continue de onde parou.</p>
+
+    <div id="registerForm">
+      <label>Nome completo</label>
+      <input id="regName" placeholder="Seu nome" maxlength="40">
+
+      <label>Foto de perfil (opcional)</label>
+      <input type="file" id="regPhoto" accept="image/*">
+
+      <button class="btn gold" style="width:100%;margin-top:22px" onclick="salvarCadastro()">
+        Salvar e entrar
+      </button>
     </div>
 
-    <div class="container">
-        <!-- Corpo principal da câmera -->
-        <div class="camera-body">
-            <!-- Visor da câmera -->
-            <div class="camera-viewfinder">
-                <canvas id="videoCanvas"></canvas>
-                <div class="viewfinder-overlay">
-                    <div class="viewfinder-top-bar">
-                        <div class="viewfinder-info">
-                            <span><i class="fas fa-bolt"></i> <span id="exposureValue">+0.0</span></span>
-                            <span><i class="fas fa-expand-alt"></i> <span id="zoomValue">1.0x</span></span>
-                            <span><i class="fas fa-camera"></i> <span id="isoValue">ISO 100</span></span>
-                        </div>
-                        <div class="viewfinder-info">
-                            <span><i class="fas fa-sun"></i> <span id="wbValue">Auto</span></span>
-                            <span><i class="fas fa-clock"></i> <span id="timerValue">OFF</span></span>
-                            <span><i class="fas fa-sd-card"></i> <span id="storageValue">87%</span></span>
-                        </div>
-                    </div>
-                    <div class="focus-box"></div>
-                    <div class="viewfinder-bottom-bar">
-                        <div class="viewfinder-info">
-                            <span><i class="fas fa-filter"></i> <span id="filterValue">Nenhum</span></span>
-                            <span><i class="fas fa-broadcast-tower"></i> <span id="resolutionValue">64×64</span></span>
-                            <span><i class="fas fa-battery-three-quarters"></i> <span id="batteryValue">78%</span></span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Controles de resolução e filtros -->
-            <div class="camera-controls">
-                <div class="control-group">
-                    <h3><i class="fas fa-expand-alt"></i> Resolução</h3>
-                    <div class="slider-container">
-                        <div class="slider-label">
-                            <span>Resolução:</span>
-                            <span id="resolutionDisplay">64×64</span>
-                        </div>
-                        <input type="range" min="2" max="512" value="64" step="1" class="slider" id="resolutionSlider">
-                        <div class="slider-label">
-                            <span>Baixa</span>
-                            <span>Alta</span>
-                        </div>
-                    </div>
-                    <div class="control-buttons">
-                        <button class="btn" id="res64">64×64</button>
-                        <button class="btn" id="res32">32×32</button>
-                        <button class="btn" id="res16">16×16</button>
-                    </div>
-                </div>
-
-                <div class="control-group">
-                    <h3><i class="fas fa-camera"></i> Controles</h3>
-                    <div class="control-buttons">
-                        <button class="btn btn-primary" id="captureBtn">
-                            <i class="fas fa-camera"></i> Capturar Foto
-                        </button>
-                        <button class="btn" id="toggleCameraBtn">
-                            <i class="fas fa-sync-alt"></i> Alternar Câmera
-                        </button>
-                        <button class="btn" id="timerBtn">
-                            <i class="fas fa-clock"></i> Temporizador
-                        </button>
-                    </div>
-                    <div class="slider-container">
-                        <div class="slider-label">
-                            <span>Exposição:</span>
-                            <span id="exposureDisplay">0.0</span>
-                        </div>
-                        <input type="range" min="-2" max="2" value="0" step="0.1" class="slider" id="exposureSlider">
-                    </div>
-                </div>
-
-                <div class="control-group">
-                    <h3><i class="fas fa-eye"></i> Visualização</h3>
-                    <div class="control-buttons">
-                        <button class="btn" id="galleryBtn">
-                            <i class="fas fa-images"></i> Galeria
-                        </button>
-                        <button class="btn btn-danger" id="clearGalleryBtn">
-                            <i class="fas fa-trash"></i> Limpar Galeria
-                        </button>
-                    </div>
-                    <div class="slider-container">
-                        <div class="slider-label">
-                            <span>Zoom:</span>
-                            <span id="zoomDisplay">1.0x</span>
-                        </div>
-                        <input type="range" min="1" max="4" value="1" step="0.1" class="slider" id="zoomSlider">
-                    </div>
-                </div>
-            </div>
-
-            <!-- Filtros retro -->
-            <div class="control-group">
-                <h3><i class="fas fa-palette"></i> Filtros Retro</h3>
-                <div class="filters-grid">
-                    <div class="filter-option active" data-filter="none">
-                        <div class="filter-color-preview" style="background: linear-gradient(90deg, #ff0000, #00ff00, #0000ff);"></div>
-                        <div class="filter-name">Nenhum</div>
-                    </div>
-                    <div class="filter-option" data-filter="pico8">
-                        <div class="filter-color-preview" style="background: linear-gradient(90deg, #000000, #1D2B53, #7E2553, #FF004D);"></div>
-                        <div class="filter-name">PICO-8</div>
-                    </div>
-                    <div class="filter-option" data-filter="gameboy">
-                        <div class="filter-color-preview" style="background: linear-gradient(90deg, #0f380f, #306230, #8bac0f, #9bbc0f);"></div>
-                        <div class="filter-name">Game Boy</div>
-                    </div>
-                    <div class="filter-option" data-filter="nes">
-                        <div class="filter-color-preview" style="background: linear-gradient(90deg, #000000, #fcfcfc, #f8f8f8, #bcbcbc);"></div>
-                        <div class="filter-name">NES</div>
-                    </div>
-                    <div class="filter-option" data-filter="cga">
-                        <div class="filter-color-preview" style="background: linear-gradient(90deg, #000000, #55ffff, #ff55ff, #ffffff);"></div>
-                        <div class="filter-name">CGA</div>
-                    </div>
-                    <div class="filter-option" data-filter="c64">
-                        <div class="filter-color-preview" style="background: linear-gradient(90deg, #000000, #6c6c6c, #b8b8b8, #ffffff);"></div>
-                        <div class="filter-name">Commodore 64</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Indicadores de status -->
-            <div class="status-indicators">
-                <div class="status-item">
-                    <i class="fas fa-battery-three-quarters"></i>
-                    <div class="battery-level">
-                        <div class="battery-fill" id="batteryFill"></div>
-                    </div>
-                    <span id="batteryText">78%</span>
-                </div>
-                <div class="status-item">
-                    <i class="fas fa-sd-card"></i>
-                    <span>Armazenamento: <span id="storageText">87%</span></span>
-                </div>
-                <div class="status-item">
-                    <i class="fas fa-camera"></i>
-                    <span>Câmera: <span id="cameraTypeText">Traseira</span></span>
-                </div>
-                <div class="status-item">
-                    <i class="fas fa-filter"></i>
-                    <span>Filtro: <span id="activeFilterText">Nenhum</span></span>
-                </div>
-            </div>
+    <div id="portalDashboard" style="display:none">
+      <div style="text-align:center;margin-bottom:20px">
+        <div id="dashPhoto" style="width:90px;height:90px;border-radius:50%;margin:0 auto 10px;border:3px solid var(--gold);background:#eee;overflow:hidden">
+          <img id="dashImg" style="width:100%;height:100%;object-fit:cover;display:none">
         </div>
+        <h3 id="dashName" style="font-family:Georgia,serif;font-size:22px"></h3>
+        <p style="color:var(--muted);font-size:13px">Nível <strong id="dashLevel">0</strong> • <span id="dashRank">Iniciante</span></p>
+      </div>
 
-        <!-- Galeria de fotos -->
-        <div class="gallery-container" id="galleryContainer">
-            <div class="gallery-header">
-                <h2><i class="fas fa-images"></i> Galeria de Fotos</h2>
-                <button class="btn btn-danger" id="closeGalleryBtn">
-                    <i class="fas fa-times"></i> Fechar
-                </button>
-            </div>
-            <div class="gallery-images" id="galleryImages">
-                <!-- As imagens serão adicionadas dinamicamente aqui -->
-            </div>
-            <p id="emptyGalleryMessage" style="text-align: center; padding: 20px; color: var(--camera-text-dim);">
-                A galeria está vazia. Capture algumas fotos para vê-las aqui!
-            </p>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill" style="width:0%"></div>
+      </div>
+      <p style="font-size:12px;color:var(--muted);text-align:center;margin-bottom:18px">
+        <span id="completedCount">0</span> de <span id="totalCourses">7</span> cursos concluídos
+      </p>
+
+      <button class="btn gold" style="width:100%;margin-bottom:10px" onclick="gerarDiploma()">
+        Baixar Diploma Oficial
+      </button>
+      <button class="btn outline" style="width:100%" onclick="resetProgress()">
+        Reiniciar progresso
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== MODAL CURSO (AULA + QUIZ) ========== -->
+<div class="modal" id="courseModal">
+  <div class="dialog" style="max-width:560px">
+    <button class="close" onclick="closeModal('courseModal')">×</button>
+    <div class="eyebrow">Aula + Quiz</div>
+    <h2 id="courseTitle"></h2>
+    <p class="sub" id="courseSub"></p>
+
+    <div id="lessonArea">
+      <div class="lesson-box" id="lessonText"></div>
+      <button class="btn gold" style="width:100%" onclick="startQuiz()">Começar o Quiz</button>
+    </div>
+
+    <div id="quizArea" style="display:none">
+      <div id="quizQuestions"></div>
+      <button class="btn gold" style="width:100%;margin-top:10px" onclick="submitQuiz()">Enviar respostas</button>
+    </div>
+
+    <div id="quizResult" style="display:none;text-align:center;padding:20px 0">
+      <div id="resultIcon" style="font-size:48px;margin-bottom:12px"></div>
+      <h3 id="resultTitle" style="font-family:Georgia,serif;margin-bottom:8px"></h3>
+      <p id="resultMsg" style="color:var(--muted);font-size:14px;margin-bottom:20px"></p>
+      <button class="btn gold" onclick="closeModal('courseModal')">Continuar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ====================== DADOS ====================== */
+const courses = [
+  {
+    id: "001",
+    title: "Putifera Fundamental",
+    short: "Os princípios essenciais e a história da tradição Luyara.",
+    lesson: "A putiferagem básica não é sobre ser o mais gostoso. É sobre ser o mais inconveniente com estilo. Você vai aprender a entrar em lugares que não te convidaram, falar merda com confiança de quem tem razão e sair como se tivesse sido a melhor parte da noite.",
+    questions: [
+      {
+        q: "Qual a principal qualidade de um putífero iniciante?",
+        options: [
+          "Ser extremamente gostoso",
+          "Ter a cara de pau",
+          "Saber a data de aniversário de todas as ex e ainda mandar flor",
+          "Chorar quando é rejeitado e pedir segunda chance no mesmo dia",
+          "Ter um grupo de amigos que fica de olho pra você não fazer merda"
+        ],
+        correct: 1
+      },
+      {
+        q: "Quando a situação está caindo aos pedaços, o putífero deve:",
+        options: [
+          "Se fazer de coitado pedindo desculpas",
+          "Dobrar a aposta e fingir e bloquear",
+          "Não assumir a culpa e oferecer dinheiro pra todo mundo ficar quieto",
+          "Ligar pra mãe ameaçando e pedir pra ela resolver",
+          "Bloquear pra sair da conversa"
+        ],
+        correct: 0
+      },
+      {
+        q: "O putífero fundamental acredita que:",
+        options: [
+          "NEM A PORRA DA DONA SABE",
+          "Se ninguém viu, não aconteceu (e mesmo se viu, nega)",
+          "É importante pedir consentimento por escrito",
+          "Melhor prevenir do que remediar",
+          "Amizade verdadeira não se mistura com interesse"
+        ],
+        correct: 0
+      },
+      {
+        q: "Quando alguém te confronta com uma verdade inconveniente, você:",
+        options: [
+          "Não admite na hora e não pede desculpas sinceras",
+          "Muda de assunto e finge que a pessoa está louca",
+          "Começa a chorar pra gerar pena",
+          "Acusa a pessoa de estar te atacando emocionalmente",
+          "Finge que não entendeu e pede pra repetir mais devagar, ate parar"
+        ],
+        correct: 4
+      },
+      {
+        q: "O maior erro que um iniciante pode cometer é:",
+        options: [
+          "Ser honesto demais cedo demais",
+          "Ter vergonha na hora H",
+          "Não ter plano B, C e D de mentira(sim mentira tem D)",
+          "Acreditar que as pessoas vão te perdoar de verdade",
+          "Todas as anteriores estão corretas e você já sabe disso"
+        ],
+        correct: 2
+      }
+    ]
+  },
+  {
+    id: "002",
+    title: "Diplomacia & Desenrolo",
+    short: "Comunicação estratégica e domínio das situações improváveis.",
+    lesson: "Desenrolar é a arte de transformar um crime emocional em anedota engraçada. Você vai aprender a mentir com carinho, usar o humor ácido como colete à prova de balas e fazer a pessoa que você acabou de foder na bola ainda rir no final.",
+    questions: [
+      {
+        q: "A melhor forma de desenrolar uma situação fudida é:",
+        options: [
+          "Assumir o erro, pedir perdão de verdade e nunca mais repetir",
+          "Transformar a cagada em piada antes que vire trauma coletivo",
+          "Fingir que tem depressão pra ganhar pena e sair limpo",
+          "Culpar a bebida, o signo e a criação que a outra pessoa teve",
+          "Dizer que foi brincadeira e que a pessoa não sabe levar"
+        ],
+        correct: 2
+      },
+      {
+        q: "Quando alguém te pergunta ‘você tá me enrolando?’ a resposta correta é:",
+        options: [
+          "Não, juro por tudo que é mais sagrado na minha vida",
+          "Sim",
+          "Não, eu só sou emocionalmente instável e você que não entende",
+          "Depende… você ainda tem alguma dignidade sobrando?",
+          "Eu nunca enrolaria você, você é diferente"
+        ],
+        correct: 3
+      },
+      {
+        q: "O desenrolador profissional usa o silêncio para:",
+        options: [
+          "Refletir sobre seus erros e se tornar uma pessoa melhor",
+          "Deixar a outra pessoa desconfortável até ela desistir de cobrar",
+          "Rezar pedindo força pra não falar mais merda",
+          "Pensar numa mentira melhor",
+          "Ambas as opções B e D"
+        ],
+        correct: 4
+      },
+      {
+        q: "Qual dessas frases é mais útil num desenrolo clássico?",
+        options: [
+          "Você tem toda razão, eu fui um idiota",
+          "Nossa, você tá muito estressado hoje, aconteceu alguma coisa?",
+          "Eu juro que não foi bem assim que aconteceu",
+          "Você tá distorcendo tudo, como sempre, louca(o)",
+          "Todas menos a primeira"
+        ],
+        correct: 3
+      },
+      {
+        q: "O nível máximo de desenrolo é conseguido quando:",
+        options: [
+          "A pessoa te perdoa de verdade",
+          "A pessoa ainda te xinga, mas ri no final e te manda mensagem depois",
+          "Você consegue fazer a pessoa achar que ela que está errada",
+          "Ninguém mais fala sobre o assunto nunca mais",
+          "Você sai da conversa e a pessoa ainda se sente mal por ter te cobrado"
+        ],
+        correct: 2
+      }
+    ]
+  },
+  {
+    id: "003",
+    title: "Alta Putiferagem",
+    short: "Formação avançada para quem quer entrar para a história.",
+    lesson: "Aqui não se trata mais de sobreviver à noite. É sobre virar lenda urbana. O tipo de pessoa que anos depois ainda falam ‘lembra daquele dia que o(a) [seu nome]…?’. Alta Putiferagem é quando você para de reagir ao caos e começa a fabricar o caos de propósito.",
+    questions: [
+      {
+        q: "O que separa um putífero comum de um de Alta Putiferagem?",
+        options: [
+          "A quantidade de gente que já comeu e ainda come",
+          "A capacidade de transformar vergonha alheia em patrimônio cultural",
+          "Ter dinheiro o suficiente pra calar a boca de todo mundo depois",
+          "Nunca ser pego, nunca ser filmado e nunca deixar testemunha viva",
+          "Ter um advogado de plantão e um plano de fuga"
+        ],
+        correct: 0
+      },
+      {
+        q: "Quando a noite está boa demais, o mestre da Alta Putiferagem:",
+        options: [
+          "Vai embora cedo pra não estragar o momento perfeito",
+          "Empurra mais um pouco só pra ver até onde a realidade aguenta",
+          "Começa a filmar escondido pra ter material de chantagem depois",
+          "Chama mais gente sem avisar só pra criar confusão de propósito",
+          "Finge que vai embora e volta 40 minutos depois pior ainda"
+        ],
+        correct: 2
+      },
+      {
+        q: "O verdadeiro objetivo da Alta Putiferagem é:",
+        options: [
+          "Ser feliz e construir relacionamentos saudáveis",
+          "Ser lembrado, mesmo que seja pelas piores razões",
+          "Nunca ser pego em flagrante",
+          "Ter muitas histórias pra contar na terapia",
+          "Fazer com que as pessoas tenham medo de falar seu nome"
+        ],
+        correct: 2
+      },
+      {
+        q: "Um sinal claro de que você chegou na Alta Putiferagem é:",
+        options: [
+          "As pessoas começam a te respeitar de verdade",
+          "As pessoas falam de você com uma mistura de medo, risada e inveja",
+          "Você consegue mentir sem sentir nada",
+          "Você já perdeu a conta de quantas vezes precisou mudar de círculo social",
+          "Todas as anteriores, menos a primeira"
+        ],
+        correct: 4
+      },
+      {
+        q: "O maior elogio que um mestre de Alta Putiferagem pode receber é:",
+        options: [
+          "Você é uma pessoa incrível e confiável",
+          "Caralho, eu não acredito que você fez isso… e ainda funcionou",
+          "Você deveria ser preso, morto, tudo de ruim",
+          "Eu te admiro muito como ser humano",
+          "Você mudou minha vida pra melhor"
+        ],
+        correct: 2
+      }
+    ]
+  },
+  {
+    id: "004",
+    title: "Cuspida na Boca",
+    short: "Técnica, precisão e impacto direto.",
+    lesson: "Aqui não tem metáfora fofa. Cuspida na boca é sobre ir direto, sem pedir licença, sem rodeio, sem ‘será que posso?’. É sobre olhar no olho e fazer exatamente aquilo que todo mundo está pensando mas tem medo de executar. Se for pra ser safado, que seja com precisão cirúrgica e sem arrependimento.",
+    questions: [
+      {
+        q: "A filosofia deste curso pode ser resumida em:",
+        options: [
+          "Peça licença educadamente e espere a resposta",
+          "Entra com vontade, se for pra sujar que suje direito e com gosto",
+          "Só faz se a pessoa pedir três vezes e por escrito",
+          "Nunca faça nada que não possa contar no almoço de família",
+          "Sempre deixe uma porta aberta pra negação depois"
+        ],
+        correct: 2
+      },
+      {
+        q: "Quando a pessoa te olha com cara de ‘você não vai fazer isso né?’:",
+        options: [
+          "Você respeita o limite na hora e pede desculpas",
+          "Você faz exatamente isso, só pra ver a reação e gravar na memória",
+          "Você pergunta de novo se pode, de forma bem educada",
+          "Você desiste e finge que estava brincando o tempo todo",
+          "Você diz ‘só se você quiser’ e espera ela ceder pela pressão"
+        ],
+        correct: 1
+      },
+      {
+        q: "O praticante avançado de Cuspida na Boca acredita que:",
+        options: [
+          "Consentimento é sagrado e deve ser verbal e contínuo",
+          "Se a pessoa não saiu correndo, é porque estava tudo bem",
+          "É melhor pedir perdão depois do que pedir licença antes",
+          "Toda resistência inicial é só teatro",
+          "As opções B, C e D juntas formam a doutrina sagrada"
+        ],
+        correct: 3
+      },
+      {
+        q: "Qual dessas atitudes representa melhor o espírito do curso?",
+        options: [
+          "Cuspir na boca",
+          "Criar o momento e depois negociar o significado dele",
+          "Só agir quando tiver certeza absoluta de que vai dar certo",
+          "Nunca fazer nada que possa ser usado contra você depois",
+          "Agir primeiro e deixar a moral pra quem tem tempo"
+        ],
+        correct: 4
+      },
+      {
+        q: "O maior orgulho de um aluno desse curso é:",
+        options: [
+          "Nunca ter ultrapassado um limite",
+          "Ter feito algo tão absurdo que a pessoa ainda conta a história anos depois",
+          "Ter sempre sido respeitoso e cuidadoso",
+          "Nunca ter sido xingado depois",
+          "Ter conseguido fazer a pessoa achar que foi ideia dela"
+        ],
+        correct: 4
+      }
+    ]
+  },
+  {
+    id: "005",
+    title: "Sadomasoquista",
+    short: "Limites, consentimento e a estética da intensidade.",
+    lesson: "Tem gente que gosta de dar, tem gente que gosta de receber, e tem gente que gosta de ver os dois lados sangrando um pouquinho. O importante é todo mundo estar ciente, de preferência gozando, e ter uma palavra de segurança que não seja ‘para’ porque senão fica sem graça.",
+    questions: [
+      {
+        q: "O que NÃO pode faltar numa dinâmica realmente safada?",
+        options: [
+          "Uma boa playlist e velas aromáticas",
+          "Consentimento claro e a possibilidade real de parar",
+          "Alguém filmando escondido pra depois usar como material",
+          "Álcool + remédio controlado pra ninguém lembrar direito no dia seguinte(que porra de pergunta e essa???????)",
+          "Um contrato verbal que ninguém vai lembrar depois"
+        ],
+        correct: 3
+      },
+      {
+        q: "Aftercare existe porque:",
+        options: [
+          "É frescura de gente sensível e moderno demais",
+          "Depois de foder com a cabeça e o corpo da pessoa, o mínimo é ajudar a juntar os cacos",
+          "Só serve pra quem é fraco e não aguenta o tranco",
+          "Não existe. negocio e dormi",
+          "É só uma desculpa pra continuar perto da pessoa depois"
+        ],
+        correct: 0
+      },
+      {
+        q: "A palavra de segurança serve para:",
+        options: [
+          "Ser respeitada imediatamente, sem discussão",
+          "Ser testada pra ver se a pessoa está falando sério",
+          "Ser ignorada se a coisa estiver boa demais",
+          "Ser usada só quando realmente estiver insuportável",
+          "Ser um detalhe burocrático que atrapalha o clima"
+        ],
+        correct: 4
+      },
+      {
+        q: "O sadomasoquista amador geralmente:",
+        options: [
+          "Respeita todos os limites combinados",
+          "Acha que ‘não’ é só o começo da negociação",
+          "Para na hora quando a pessoa pede",
+          "Se preocupa mais com o prazer do outro do que com o próprio",
+          "Prefere atividades leves e bem comunicadas"
+        ],
+        correct: 2
+      },
+      {
+        q: "O verdadeiro perigo desse curso é:",
+        options: [
+          "Alguém se machucar de verdade",
+          "Você começar a achar normal coisas que a maioria considera inaceitável",
+          "A pessoa se apaixonar por você",
+          "Você se apaixonar pela sensação de controle",
+          "Todas as anteriores estão corretas e você já sabe disso"
+        ],
+        correct: 1
+      }
+    ]
+  },
+  {
+    id: "006",
+    title: "Vaporizar / Mama o Diabo",
+    short: "Elevação, ritual e contato com o lado selvagem.",
+    lesson: "Tem noite que você só quer umas cervejas. Tem noite que você quer mamar o diabo com gosto de fruta e ver o que sobra de você no dia seguinte. Esse curso é pro segundo tipo. Aqui a gente fala de excesso com consciência e de rituais ridículos que inexplicavelmente funcionam.",
+    questions: [
+      {
+        q: "‘Mama o diabo’ neste contexto significa:",
+        options: [
+          "Fazer sexo com entidades demoníacas de verdade",
+          "Entregar-se ao caos de forma deliberada, com estilo e de preferência com gosto de fruta",
+          "VAPORIZAR",
+          "Beber até quase morrer e depois agradecer ao universo",
+          "Fazer um pacto formal com forças obscuras em troca de uma noite boa"
+        ],
+        correct: 2
+      },
+      {
+        q: "O perigo real deste nível é:",
+        options: [
+          "Virar viciado em VAPORIZAR",
+          "Achar que você é imortal e testar isso na prática com coisas que não deveriam ser testadas",
+          "Acordar pelado em outro estado sem documento e sem memória",
+          "Começar a achar normal fazer coisas que a maioria das pessoas consideraria crime",
+          "Todas as anteriores, e você ainda vai rir enquanto conta"
+        ],
+        correct: 4
+      },
+      {
+        q: "O ritual de ‘vaporizar’ geralmente envolve:",
+        options: [
+          "Meditação, respiração e conexão espiritual saudável",
+          "Uma sequência de decisões cada vez piores que de alguma forma fazem sentido no momento",
+          "Oração e gratidão",
+          "Parar quando ainda está no controle",
+          "MAMAR O DIABO"
+        ],
+        correct: 4
+      },
+      {
+        q: "Quem realmente entendeu esse curso:",
+        options: [
+          "Nunca mais VAPORIZARA NA VIDA PORQUE QUEM VAPORIZA MAMA 100 DIABOS",
+          "Exagera com mais estilo e menos arrependimento",
+          "Para de beber e vira exemplo de vida",
+          "Só faz isso uma vez na vida pra contar a história",
+          "Recomenda o curso pra todo mundo que está triste"
+        ],
+        correct: 0
+      },
+      {
+        q: "O legado de quem mamou o diabo com sucesso é:",
+        options: [
+          "MORTE NEH, DUH",
+          "Um conjunto de histórias que ninguém acredita, mas todo mundo quer ouvir",
+          "Vários inimigos e alguns processos",
+          "Uma reputação que abre e fecha portas ao mesmo tempo",
+          "As opções B, C e D juntas"
+        ],
+        correct: 0
+      }
+    ]
+  },
+  {
+    id: "007",
+    title: "Caçar Rato pro Almoço",
+    short: "Astúcia, paciência e instinto caçador.",
+    lesson: "Aqui não se caça só rato. Se mexe, entra na panela. Barata, rato, oportunidade mal-amada, ex que ainda responde story… tudo é proteína. O bom caçador não tem nojo, tem fome. E quando a caçada dá errado, o putífero de verdade não desiste: ele vomita e come de novo.",
+    questions: [
+      {
+        q: "O bom caçador de rato:",
+        options: [
+          "Só caça rato de verdade e tem nojo de barata",
+          "Observa, espera, e se mexer (rato, barata, oportunidade) joga na panela sem cerimônia",
+          "Prefere passar fome do que comer coisa nojenta",
+          "Chama os outros pra caçar e só aparece na hora de comer o que sobrou",
+          "Cru da mais gosto"
+        ],
+        correct: 4
+      },
+      {
+        q: "Quando a caçada dá errado, o putífero de verdade:",
+        options: [
+          "Finge que nunca tentou e muda de assunto rapidinho",
+          "Vomita pra ainda conseguir aproveitar o almoço e tenta de novo depois",
+          "Desiste pra sempre e vira vegetariano emocional",
+          "Fica com raiva do rato e passa a perseguir ele por vingança pessoal",
+          "Culpa a falta de oportunidade e o sistema"
+        ],
+        correct: 1
+      },
+      {
+        q: "No cardápio do verdadeiro caçador entra:",
+        options: [
+          "Apenas coisas limpas, éticas e socialmente aceitas",
+          "Tudo que se mexer e não conseguir correr rápido o suficiente",
+          "Só o que foi oferecido de livre e espontânea vontade",
+          "Nada que possa gerar arrependimento no dia seguinte",
+          "Apenas oportunidades que não prejudiquem ninguém"
+        ],
+        correct: 1
+      },
+      {
+        q: "A maior virtude do caçador de rato é:",
+        options: [
+          "Paciência e respeito pelos limites alheios",
+          "Ausência total de nojo e de escrúpulo",
+          "Saber a hora de parar",
+          "Ter empatia pela presa",
+          "Caçar só o necessário pra sobreviver"
+        ],
+        correct: 1
+      },
+      {
+        q: "O lema oficial deste curso poderia ser:",
+        options: [
+          "Respeito, consentimento e moderação",
+          "Melhor passar fome do que perder a dignidade",
+          "Caçar só o que a sociedade aprova",
+          "Se mexeu, é comida. Se não mexeu, também pode ser.",
+          "Sempre deixar um pouco pra próxima geração"
+        ],
+        correct: 3
+      }
+    ]
+  }
+];
+
+/* ====================== ESTADO ====================== */
+let currentCourse = null;
+let aluno = JSON.parse(localStorage.getItem("luyara_aluno") || "null");
+
+/* ====================== INICIALIZAÇÃO ====================== */
+function init() {
+  renderCourses();
+  updateSidebar();
+  if (aluno) {
+    document.getElementById("statLevel").textContent = aluno.level || 0;
+  }
+}
+
+function updateSidebar() {
+  const nameEl = document.getElementById("sideName");
+  const levelEl = document.getElementById("sideLevel");
+  const badge = document.getElementById("levelBadge");
+  const photo = document.getElementById("profilePhoto");
+  const placeholder = document.getElementById("photoPlaceholder");
+
+  if (aluno && aluno.nome) {
+    nameEl.textContent = aluno.nome;
+    levelEl.textContent = aluno.level || 0;
+    badge.textContent = getRank(aluno.level || 0);
+
+    if (aluno.foto) {
+      photo.src = aluno.foto;
+      photo.style.display = "block";
+      placeholder.style.display = "none";
+    }
+  } else {
+    nameEl.textContent = "Visitante";
+    levelEl.textContent = "0";
+    badge.textContent = "Iniciante";
+  }
+}
+
+function getRank(level) {
+  if (level >= 6) return "Luyara";
+  if (level >= 4) return "Mestre Putífero";
+  if (level >= 2) return "Praticante";
+  if (level >= 1) return "Aprendiz";
+  return "Iniciante";
+}
+
+/* ====================== CURSOS ====================== */
+function renderCourses() {
+  const container = document.getElementById("courseCards");
+  const completed = (aluno && aluno.completed) ? aluno.completed : [];
+
+  container.innerHTML = courses.map(c => {
+    const done = completed.includes(c.id);
+    return `
+      <article class="course ${done ? "completed" : ""}">
+        ${done ? '<div class="badge-done">CONCLUÍDO</div>' : ""}
+        <div class="number">CURSO ${c.id}</div>
+        <h3>${c.title}</h3>
+        <p>${c.short}</p>
+        <div class="course-actions">
+          <button class="btn sm gold" onclick="openCourse('${c.id}')">
+            ${done ? "Revisar aula" : "Fazer aula + quiz"}
+          </button>
         </div>
+      </article>
+    `;
+  }).join("");
+}
+
+function openCourse(id) {
+  currentCourse = courses.find(c => c.id === id);
+  if (!currentCourse) return;
+
+  document.getElementById("courseTitle").textContent = currentCourse.title;
+  document.getElementById("courseSub").textContent = "Aula rápida + quiz de 2 perguntas";
+  document.getElementById("lessonText").textContent = currentCourse.lesson;
+
+  document.getElementById("lessonArea").style.display = "block";
+  document.getElementById("quizArea").style.display = "none";
+  document.getElementById("quizResult").style.display = "none";
+
+  document.getElementById("courseModal").classList.add("show");
+}
+
+function startQuiz() {
+  const area = document.getElementById("quizQuestions");
+  area.innerHTML = currentCourse.questions.map((q, i) => `
+    <div class="quiz-question">
+      <h4>${i + 1}. ${q.q}</h4>
+      <div class="quiz-options">
+        ${q.options.map((opt, j) => `
+          <label>
+            <input type="radio" name="q${i}" value="${j}">
+            <span>${opt}</span>
+          </label>
+        `).join("")}
+      </div>
     </div>
+  `).join("");
 
-    <!-- Modal para visualização de imagem -->
-    <div class="modal" id="imageModal">
-        <span class="modal-close" id="modalClose">&times;</span>
-        <img class="modal-content" id="modalImage">
-    </div>
+  document.getElementById("lessonArea").style.display = "none";
+  document.getElementById("quizArea").style.display = "block";
+}
 
-    <div class="footer">
-        <p>Câmera Digital Retro Pixelizada | Captura de imagens com estética de consoles clássicos | Desenvolvido com HTML5, CSS3 e JavaScript</p>
-    </div>
+function submitQuiz() {
+  let correct = 0;
+  currentCourse.questions.forEach((q, i) => {
+    const selected = document.querySelector(`input[name="q${i}"]:checked`);
+    if (selected && parseInt(selected.value) === q.correct) correct++;
+  });
 
-    <script>
-        // Elementos principais
-        const videoCanvas = document.getElementById('videoCanvas');
-        const ctx = videoCanvas.getContext('2d');
-        const resolutionSlider = document.getElementById('resolutionSlider');
-        const resolutionDisplay = document.getElementById('resolutionDisplay');
-        const resolutionValue = document.getElementById('resolutionValue');
-        const exposureSlider = document.getElementById('exposureSlider');
-        const exposureDisplay = document.getElementById('exposureDisplay');
-        const exposureValue = document.getElementById('exposureValue');
-        const zoomSlider = document.getElementById('zoomSlider');
-        const zoomDisplay = document.getElementById('zoomDisplay');
-        const zoomValue = document.getElementById('zoomValue');
-        const captureBtn = document.getElementById('captureBtn');
-        const toggleCameraBtn = document.getElementById('toggleCameraBtn');
-        const timerBtn = document.getElementById('timerBtn');
-        const galleryBtn = document.getElementById('galleryBtn');
-        const clearGalleryBtn = document.getElementById('clearGalleryBtn');
-        const closeGalleryBtn = document.getElementById('closeGalleryBtn');
-        const galleryContainer = document.getElementById('galleryContainer');
-        const galleryImages = document.getElementById('galleryImages');
-        const emptyGalleryMessage = document.getElementById('emptyGalleryMessage');
-        const cameraBody = document.querySelector('.camera-body');
-        const filterOptions = document.querySelectorAll('.filter-option');
-        const activeFilterText = document.getElementById('activeFilterText');
-        const filterValue = document.getElementById('filterValue');
-        const res64Btn = document.getElementById('res64');
-        const res32Btn = document.getElementById('res32');
-        const res16Btn = document.getElementById('res16');
-        const batteryFill = document.getElementById('batteryFill');
-        const batteryText = document.getElementById('batteryText');
-        const batteryValue = document.getElementById('batteryValue');
-        const storageText = document.getElementById('storageText');
-        const storageValue = document.getElementById('storageValue');
-        const cameraTypeText = document.getElementById('cameraTypeText');
-        const isoValue = document.getElementById('isoValue');
-        const wbValue = document.getElementById('wbValue');
-        const timerValue = document.getElementById('timerValue');
-        const modal = document.getElementById('imageModal');
-        const modalImage = document.getElementById('modalImage');
-        const modalClose = document.getElementById('modalClose');
+  const total = currentCourse.questions.length;
+  const passed = correct >= Math.ceil(total * 0.6); // 60%
 
-        // Variáveis de estado
-        let videoStream = null;
-        let isFrontCamera = false;
-        let currentResolution = 64;
-        let currentFilter = 'none';
-        let isTimerActive = false;
-        let timerCountdown = 0;
-        let timerInterval = null;
-        let batteryLevel = 78;
-        let storageLevel = 87;
-        let exposure = 0;
-        let zoom = 1;
-        let capturedImages = [];
-        
-        // Paletas de cores para os filtros
-        const filterPalettes = {
-            none: null,
-            pico8: [
-                [0, 0, 0],       // Preto
-                [29, 43, 83],    // Azul escuro
-                [126, 37, 83],   // Roxo
-                [255, 0, 77],    // Vermelho
-                [255, 163, 0],   // Laranja
-                [255, 236, 39],  // Amarelo
-                [0, 228, 54],    // Verde
-                [41, 173, 255],  // Azul claro
-                [131, 118, 156], // Cinza azulado
-                [255, 119, 168], // Rosa
-                [255, 204, 170], // Pele
-                [41, 24, 20]     // Marrom
-            ],
-            gameboy: [
-                [15, 56, 15],    // Verde muito escuro
-                [48, 98, 48],    // Verde escuro
-                [139, 172, 15],  // Verde médio
-                [155, 188, 15]   // Verde claro
-            ],
-            nes: [
-                [0, 0, 0],       // Preto
-                [255, 255, 255], // Branco
-                [188, 188, 188], // Cinza claro
-                [136, 136, 136], // Cinza médio
-                [85, 85, 85],    // Cinza escuro
-                [255, 0, 0],     // Vermelho
-                [0, 255, 0],     // Verde
-                [0, 0, 255]      // Azul
-            ],
-            cga: [
-                [0, 0, 0],       // Preto
-                [85, 255, 255],  // Ciano
-                [255, 85, 255],  // Magenta
-                [255, 255, 255]  // Branco
-            ],
-            c64: [
-                [0, 0, 0],       // Preto
-                [108, 108, 108], // Cinza médio
-                [184, 184, 184], // Cinza claro
-                [255, 255, 255]  // Branco
-            ]
-        };
+  const resultArea = document.getElementById("quizResult");
+  document.getElementById("quizArea").style.display = "none";
+  resultArea.style.display = "block";
 
-        // Inicializar a câmera
-        async function initCamera() {
-            try {
-                const constraints = {
-                    video: {
-                        facingMode: isFrontCamera ? "user" : "environment",
-                        width: { ideal: 640 },
-                        height: { ideal: 480 }
-                    }
-                };
-                
-                videoStream = await navigator.mediaDevices.getUserMedia(constraints);
-                const video = document.createElement('video');
-                video.srcObject = videoStream;
-                video.autoplay = true;
-                video.playsInline = true;
-                
-                // Esperar o vídeo estar pronto
-                video.addEventListener('loadedmetadata', () => {
-                    updateCanvasSize();
-                    drawVideoFrame(video);
-                });
-                
-                // Atualizar indicadores de câmera
-                cameraTypeText.textContent = isFrontCamera ? "Frontal" : "Traseira";
-                
-                // Iniciar animação da bateria
-                updateBattery();
-            } catch (error) {
-                console.error("Erro ao acessar a câmera:", error);
-                // Mostrar um placeholder se a câmera não estiver disponível
-                drawPlaceholder();
-            }
-        }
+  if (passed) {
+    document.getElementById("resultIcon").textContent = "♛";
+    document.getElementById("resultTitle").textContent = "Aprovado!";
+    document.getElementById("resultMsg").textContent = `Você acertou ${correct} de ${total}. Curso concluído e nível atualizado.`;
 
-        // Desenhar placeholder se a câmera não estiver disponível
-        function drawPlaceholder() {
-            ctx.fillStyle = '#333';
-            ctx.fillRect(0, 0, videoCanvas.width, videoCanvas.height);
-            
-            ctx.fillStyle = '#666';
-            ctx.font = '20px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText('Câmera não disponível', videoCanvas.width/2, videoCanvas.height/2 - 20);
-            ctx.font = '16px Arial';
-            ctx.fillText('Use um dispositivo com câmera ou conceda permissão', videoCanvas.width/2, videoCanvas.height/2 + 10);
-            
-            // Desenhar um padrão de grade para simular vídeo
-            ctx.strokeStyle = '#555';
-            ctx.lineWidth = 1;
-            
-            for (let x = 0; x < videoCanvas.width; x += 20) {
-                ctx.beginPath();
-                ctx.moveTo(x, 0);
-                ctx.lineTo(x, videoCanvas.height);
-                ctx.stroke();
-            }
-            
-            for (let y = 0; y < videoCanvas.height; y += 20) {
-                ctx.beginPath();
-                ctx.moveTo(0, y);
-                ctx.lineTo(videoCanvas.width, y);
-                ctx.stroke();
-            }
-        }
+    // Atualiza progresso
+    if (!aluno) {
+      alert("Faça seu cadastro no Portal primeiro para salvar o progresso!");
+      return;
+    }
+    if (!aluno.completed) aluno.completed = [];
+    if (!aluno.completed.includes(currentCourse.id)) {
+      aluno.completed.push(currentCourse.id);
+      aluno.level = aluno.completed.length;
+      localStorage.setItem("luyara_aluno", JSON.stringify(aluno));
+      updateSidebar();
+      renderCourses();
+      document.getElementById("statLevel").textContent = aluno.level;
+    }
+  } else {
+    document.getElementById("resultIcon").textContent = "✗";
+    document.getElementById("resultTitle").textContent = "Quase lá!";
+    document.getElementById("resultMsg").textContent = `Você acertou ${correct} de ${total}. Revise a aula e tente novamente.`;
+  }
+}
 
-        // Atualizar tamanho do canvas
-        function updateCanvasSize() {
-            const container = document.querySelector('.camera-viewfinder');
-            videoCanvas.width = container.clientWidth;
-            videoCanvas.height = container.clientHeight;
-        }
+/* ====================== PORTAL / CADASTRO ====================== */
+function openPortal() {
+  const modal = document.getElementById("portalModal");
+  const form = document.getElementById("registerForm");
+  const dash = document.getElementById("portalDashboard");
 
-        // Desenhar quadro do vídeo com efeitos
-        function drawVideoFrame(video) {
-            if (!videoStream) return;
-            
-            // Ajustar tamanho do canvas se necessário
-            updateCanvasSize();
-            
-            // Calcular dimensões com base no zoom
-            const canvasWidth = videoCanvas.width;
-            const canvasHeight = videoCanvas.height;
-            const scaledWidth = canvasWidth * zoom;
-            const scaledHeight = canvasHeight * zoom;
-            const offsetX = (canvasWidth - scaledWidth) / 2;
-            const offsetY = (canvasHeight - scaledHeight) / 2;
-            
-            // Limpar canvas
-            ctx.fillStyle = '#000';
-            ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-            
-            // Desenhar vídeo
-            ctx.drawImage(video, offsetX, offsetY, scaledWidth, scaledHeight);
-            
-            // Aplicar resolução baixa (pixelização)
-            applyPixelation();
-            
-            // Aplicar filtro
-            applyFilter();
-            
-            // Aplicar exposição
-            applyExposure();
-            
-            // Continuar animação
-            requestAnimationFrame(() => drawVideoFrame(video));
-        }
+  if (aluno && aluno.nome) {
+    form.style.display = "none";
+    dash.style.display = "block";
+    document.getElementById("portalTitle").textContent = "Seu Portal";
+    document.getElementById("portalSub").textContent = "Acompanhe seu progresso e baixe o diploma.";
 
-        // Aplicar pixelação baseada na resolução
-        function applyPixelation() {
-            if (currentResolution >= 512) return; // Resolução original, sem pixelação
-            
-            const canvasWidth = videoCanvas.width;
-            const canvasHeight = videoCanvas.height;
-            
-            // Reduzir a resolução
-            const tempCanvas = document.createElement('canvas');
-            const tempCtx = tempCanvas.getContext('2d');
-            
-            // Definir tamanho reduzido
-            const pixelSize = Math.max(1, Math.floor(canvasWidth / currentResolution));
-            const reducedWidth = Math.floor(canvasWidth / pixelSize);
-            const reducedHeight = Math.floor(canvasHeight / pixelSize);
-            
-            tempCanvas.width = reducedWidth;
-            tempCanvas.height = reducedHeight;
-            
-            // Desenhar imagem reduzida
-            tempCtx.drawImage(videoCanvas, 0, 0, reducedWidth, reducedHeight);
-            
-            // Ampliar de volta ao tamanho original
-            ctx.imageSmoothingEnabled = false;
-            ctx.drawImage(tempCanvas, 0, 0, reducedWidth, reducedHeight, 0, 0, canvasWidth, canvasHeight);
-        }
+    document.getElementById("dashName").textContent = aluno.nome;
+    document.getElementById("dashLevel").textContent = aluno.level || 0;
+    document.getElementById("dashRank").textContent = getRank(aluno.level || 0);
 
-        // Aplicar filtro retro
-        function applyFilter() {
-            if (currentFilter === 'none') return;
-            
-            const canvasWidth = videoCanvas.width;
-            const canvasHeight = videoCanvas.height;
-            const imageData = ctx.getImageData(0, 0, canvasWidth, canvasHeight);
-            const data = imageData.data;
-            const palette = filterPalettes[currentFilter];
-            
-            // Aplicar paleta de cores
-            for (let i = 0; i < data.length; i += 4) {
-                const r = data[i];
-                const g = data[i + 1];
-                const b = data[i + 2];
-                
-                // Encontrar a cor mais próxima na paleta
-                let closestColor = palette[0];
-                let minDistance = colorDistance(r, g, b, closestColor[0], closestColor[1], closestColor[2]);
-                
-                for (let j = 1; j < palette.length; j++) {
-                    const distance = colorDistance(r, g, b, palette[j][0], palette[j][1], palette[j][2]);
-                    if (distance < minDistance) {
-                        minDistance = distance;
-                        closestColor = palette[j];
-                    }
-                }
-                
-                // Aplicar a cor da paleta
-                data[i] = closestColor[0];
-                data[i + 1] = closestColor[1];
-                data[i + 2] = closestColor[2];
-            }
-            
-            ctx.putImageData(imageData, 0, 0);
-        }
+    const completed = aluno.completed ? aluno.completed.length : 0;
+    document.getElementById("completedCount").textContent = completed;
+    document.getElementById("totalCourses").textContent = courses.length;
+    document.getElementById("progressFill").style.width = `${(completed / courses.length) * 100}%`;
 
-        // Calcular distância entre cores
-        function colorDistance(r1, g1, b1, r2, g2, b2) {
-            return Math.sqrt(
-                Math.pow(r2 - r1, 2) + 
-                Math.pow(g2 - g1, 2) + 
-                Math.pow(b2 - b1, 2)
-            );
-        }
+    if (aluno.foto) {
+      const img = document.getElementById("dashImg");
+      img.src = aluno.foto;
+      img.style.display = "block";
+    }
+  } else {
+    form.style.display = "block";
+    dash.style.display = "none";
+    document.getElementById("portalTitle").textContent = "Cadastro";
+    document.getElementById("portalSub").textContent = "Crie seu perfil para começar a subir de nível.";
+  }
 
-        // Aplicar ajuste de exposição
-        function applyExposure() {
-            if (exposure === 0) return;
-            
-            const canvasWidth = videoCanvas.width;
-            const canvasHeight = videoCanvas.height;
-            const imageData = ctx.getImageData(0, 0, canvasWidth, canvasHeight);
-            const data = imageData.data;
-            
-            // Ajustar brilho com base na exposição
-            const factor = Math.pow(2, exposure);
-            
-            for (let i = 0; i < data.length; i += 4) {
-                data[i] = Math.min(255, data[i] * factor);
-                data[i + 1] = Math.min(255, data[i + 1] * factor);
-                data[i + 2] = Math.min(255, data[i + 2] * factor);
-            }
-            
-            ctx.putImageData(imageData, 0, 0);
-        }
+  modal.classList.add("show");
+}
 
-        // Capturar foto
-        function capturePhoto() {
-            if (isTimerActive) {
-                startTimerCountdown();
-                return;
-            }
-            
-            // Criar um canvas temporário para a captura
-            const tempCanvas = document.createElement('canvas');
-            const tempCtx = tempCanvas.getContext('2d');
-            
-            // Definir o tamanho da imagem capturada
-            tempCanvas.width = currentResolution;
-            tempCanvas.height = Math.floor(currentResolution * (videoCanvas.height / videoCanvas.width));
-            
-            // Desenhar a imagem atual no canvas temporário
-            tempCtx.drawImage(videoCanvas, 0, 0, tempCanvas.width, tempCanvas.height);
-            
-            // Obter a imagem como URL de dados
-            const imageUrl = tempCanvas.toDataURL('image/png');
-            
-            // Adicionar à galeria
-            capturedImages.push({
-                url: imageUrl,
-                filter: currentFilter,
-                resolution: currentResolution,
-                date: new Date().toLocaleString()
-            });
-            
-            // Atualizar armazenamento
-            updateStorage();
-            
-            // Feedback visual
-            captureBtn.innerHTML = '<i class="fas fa-check"></i> Capturado!';
-            captureBtn.style.backgroundColor = '#2ed573';
-            
-            setTimeout(() => {
-                captureBtn.innerHTML = '<i class="fas fa-camera"></i> Capturar Foto';
-                captureBtn.style.backgroundColor = '';
-            }, 1000);
-            
-            // Atualizar galeria se estiver visível
-            if (galleryContainer.style.display === 'block') {
-                updateGallery();
-            }
-        }
+function salvarCadastro() {
+  const nome = document.getElementById("regName").value.trim();
+  if (!nome) {
+    alert("Digite seu nome");
+    return;
+  }
 
-        // Iniciar contagem regressiva do temporizador
-        function startTimerCountdown() {
-            timerCountdown = 3;
-            timerBtn.innerHTML = `<i class="fas fa-clock"></i> ${timerCountdown}`;
-            timerBtn.style.backgroundColor = '#ffa502';
-            
-            timerInterval = setInterval(() => {
-                timerCountdown--;
-                timerBtn.innerHTML = `<i class="fas fa-clock"></i> ${timerCountdown}`;
-                
-                if (timerCountdown <= 0) {
-                    clearInterval(timerInterval);
-                    timerBtn.innerHTML = '<i class="fas fa-clock"></i> Temporizador';
-                    timerBtn.style.backgroundColor = '';
-                    isTimerActive = false;
-                    
-                    // Capturar foto após a contagem regressiva
-                    capturePhoto();
-                }
-            }, 1000);
-        }
+  const fileInput = document.getElementById("regPhoto");
+  const readerReady = (foto) => {
+    aluno = {
+      nome,
+      foto: foto || null,
+      level: 0,
+      completed: [],
+      data: new Date().toLocaleString("pt-BR")
+    };
+    localStorage.setItem("luyara_aluno", JSON.stringify(aluno));
+    updateSidebar();
+    openPortal(); // recarrega o dashboard
+  };
 
-        // Atualizar galeria
-        function updateGallery() {
-            galleryImages.innerHTML = '';
-            
-            if (capturedImages.length === 0) {
-                emptyGalleryMessage.style.display = 'block';
-                return;
-            }
-            
-            emptyGalleryMessage.style.display = 'none';
-            
-            // Adicionar imagens à galeria
-            capturedImages.forEach((image, index) => {
-                const imgContainer = document.createElement('div');
-                imgContainer.className = 'gallery-item';
-                
-                const img = document.createElement('img');
-                img.src = image.url;
-                img.alt = `Foto ${index + 1}`;
-                img.className = 'gallery-image';
-                img.dataset.index = index;
-                
-                img.addEventListener('click', () => {
-                    modalImage.src = image.url;
-                    modal.style.display = 'flex';
-                });
-                
-                const info = document.createElement('div');
-                info.style.fontSize = '0.8rem';
-                info.style.color = 'var(--camera-text-dim)';
-                info.style.marginTop = '5px';
-                info.innerHTML = `
-                    ${image.resolution}×${Math.floor(image.resolution * (videoCanvas.height / videoCanvas.width))} | 
-                    ${image.filter} | ${image.date}
-                `;
-                
-                imgContainer.appendChild(img);
-                imgContainer.appendChild(info);
-                galleryImages.appendChild(imgContainer);
-            });
-        }
+  if (fileInput.files[0]) {
+    const reader = new FileReader();
+    reader.onload = e => readerReady(e.target.result);
+    reader.readAsDataURL(fileInput.files[0]);
+  } else {
+    readerReady(null);
+  }
+}
 
-        // Atualizar nível de bateria
-        function updateBattery() {
-            // Simular variação da bateria
-            batteryLevel -= 0.1;
-            if (batteryLevel < 5) batteryLevel = 100; // Recarregar quando chegar a 5%
-            
-            batteryFill.style.width = `${batteryLevel}%`;
-            batteryText.textContent = `${Math.round(batteryLevel)}%`;
-            batteryValue.textContent = `${Math.round(batteryLevel)}%`;
-            
-            // Mudar cor conforme o nível
-            if (batteryLevel > 50) {
-                batteryFill.style.backgroundColor = '#2ed573';
-            } else if (batteryLevel > 20) {
-                batteryFill.style.backgroundColor = '#ffa502';
-            } else {
-                batteryFill.style.backgroundColor = '#ff4757';
-            }
-            
-            // Atualizar a cada 10 segundos
-            setTimeout(updateBattery, 10000);
-        }
+function handlePhoto(input) {
+  if (!input.files[0] || !aluno) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    aluno.foto = e.target.result;
+    localStorage.setItem("luyara_aluno", JSON.stringify(aluno));
+    updateSidebar();
+  };
+  reader.readAsDataURL(input.files[0]);
+}
 
-        // Atualizar armazenamento
-        function updateStorage() {
-            // Simular uso de armazenamento
-            storageLevel = Math.max(5, 100 - (capturedImages.length * 2));
-            
-            storageText.textContent = `${storageLevel}%`;
-            storageValue.textContent = `${storageLevel}%`;
-        }
+function resetProgress() {
+  if (!confirm("Apagar todo o progresso?")) return;
+  if (aluno) {
+    aluno.level = 0;
+    aluno.completed = [];
+    localStorage.setItem("luyara_aluno", JSON.stringify(aluno));
+    updateSidebar();
+    renderCourses();
+    openPortal();
+  }
+}
 
-        // Alternar câmera
-        async function toggleCamera() {
-            if (videoStream) {
-                videoStream.getTracks().forEach(track => track.stop());
-            }
-            
-            isFrontCamera = !isFrontCamera;
-            await initCamera();
-            
-            toggleCameraBtn.innerHTML = isFrontCamera ? 
-                '<i class="fas fa-mobile-alt"></i> Frontal' : 
-                '<i class="fas fa-camera"></i> Traseira';
-        }
+/* ====================== DIPLOMA GERADO DO ZERO ====================== */
+function gerarDiploma() {
+  if (!aluno || !aluno.nome) {
+    alert("Faça o cadastro primeiro!");
+    return;
+  }
 
-        // Alternar temporizador
-        function toggleTimer() {
-            isTimerActive = !isTimerActive;
-            
-            if (isTimerActive) {
-                timerBtn.style.backgroundColor = '#ffa502';
-                timerValue.textContent = '3s';
-            } else {
-                timerBtn.style.backgroundColor = '';
-                timerValue.textContent = 'OFF';
-                
-                if (timerInterval) {
-                    clearInterval(timerInterval);
-                    timerBtn.innerHTML = '<i class="fas fa-clock"></i> Temporizador';
-                }
-            }
-        }
+  const canvas = document.createElement("canvas");
+  canvas.width = 1200;
+  canvas.height = 850;
+  const ctx = canvas.getContext("2d");
 
-        // Inicializar eventos
-        function initEvents() {
-            // Controle de resolução
-            resolutionSlider.addEventListener('input', () => {
-                currentResolution = parseInt(resolutionSlider.value);
-                resolutionDisplay.textContent = `${currentResolution}×${Math.floor(currentResolution * (videoCanvas.height / videoCanvas.width))}`;
-                resolutionValue.textContent = `${currentResolution}×${Math.floor(currentResolution * (videoCanvas.height / videoCanvas.width))}`;
-            });
-            
-            res64Btn.addEventListener('click', () => {
-                currentResolution = 64;
-                resolutionSlider.value = 64;
-                resolutionDisplay.textContent = '64×48';
-                resolutionValue.textContent = '64×48';
-            });
-            
-            res32Btn.addEventListener('click', () => {
-                currentResolution = 32;
-                resolutionSlider.value = 32;
-                resolutionDisplay.textContent = '32×24';
-                resolutionValue.textContent = '32×24';
-            });
-            
-            res16Btn.addEventListener('click', () => {
-                currentResolution = 16;
-                resolutionSlider.value = 16;
-                resolutionDisplay.textContent = '16×12';
-                resolutionValue.textContent = '16×12';
-            });
-            
-            // Controle de exposição
-            exposureSlider.addEventListener('input', () => {
-                exposure = parseFloat(exposureSlider.value);
-                exposureDisplay.textContent = exposure.toFixed(1);
-                exposureValue.textContent = exposure >= 0 ? `+${exposure.toFixed(1)}` : exposure.toFixed(1);
-            });
-            
-            // Controle de zoom
-            zoomSlider.addEventListener('input', () => {
-                zoom = parseFloat(zoomSlider.value);
-                zoomDisplay.textContent = `${zoom.toFixed(1)}x`;
-                zoomValue.textContent = `${zoom.toFixed(1)}x`;
-            });
-            
-            // Botão de captura
-            captureBtn.addEventListener('click', capturePhoto);
-            
-            // Botão de alternar câmera
-            toggleCameraBtn.addEventListener('click', toggleCamera);
-            
-            // Botão de temporizador
-            timerBtn.addEventListener('click', toggleTimer);
-            
-            // Botão da galeria
-            galleryBtn.addEventListener('click', () => {
-                cameraBody.style.display = 'none';
-                galleryContainer.style.display = 'block';
-                updateGallery();
-            });
-            
-            // Botão de fechar galeria
-            closeGalleryBtn.addEventListener('click', () => {
-                galleryContainer.style.display = 'none';
-                cameraBody.style.display = 'flex';
-            });
-            
-            // Botão de limpar galeria
-            clearGalleryBtn.addEventListener('click', () => {
-                if (capturedImages.length > 0) {
-                    if (confirm('Tem certeza que deseja limpar toda a galeria?')) {
-                        capturedImages = [];
-                        updateGallery();
-                        updateStorage();
-                    }
-                }
-            });
-            
-            // Filtros
-            filterOptions.forEach(option => {
-                option.addEventListener('click', () => {
-                    // Remover classe ativa de todos
-                    filterOptions.forEach(opt => opt.classList.remove('active'));
-                    
-                    // Adicionar classe ativa ao selecionado
-                    option.classList.add('active');
-                    
-                    // Atualizar filtro atual
-                    currentFilter = option.dataset.filter;
-                    activeFilterText.textContent = option.querySelector('.filter-name').textContent;
-                    filterValue.textContent = option.querySelector('.filter-name').textContent;
-                });
-            });
-            
-            // Modal
-            modalClose.addEventListener('click', () => {
-                modal.style.display = 'none';
-            });
-            
-            window.addEventListener('click', (event) => {
-                if (event.target === modal) {
-                    modal.style.display = 'none';
-                }
-            });
-            
-            // Redimensionamento da janela
-            window.addEventListener('resize', updateCanvasSize);
-        }
+  // Fundo creme
+  ctx.fillStyle = "#fbf7ef";
+  ctx.fillRect(0, 0, 1200, 850);
 
-        // Inicializar a aplicação
-        async function initApp() {
-            await initCamera();
-            initEvents();
-            updateStorage();
-            
-            // Atualizar valores iniciais
-            resolutionDisplay.textContent = `${currentResolution}×${Math.floor(currentResolution * (videoCanvas.height / videoCanvas.width))}`;
-            resolutionValue.textContent = `${currentResolution}×${Math.floor(currentResolution * (videoCanvas.height / videoCanvas.width))}`;
-            exposureDisplay.textContent = exposure.toFixed(1);
-            exposureValue.textContent = exposure >= 0 ? `+${exposure.toFixed(1)}` : exposure.toFixed(1);
-            zoomDisplay.textContent = `${zoom.toFixed(1)}x`;
-            zoomValue.textContent = `${zoom.toFixed(1)}x`;
-        }
+  // Borda dourada externa
+  ctx.strokeStyle = "#c9a227";
+  ctx.lineWidth = 18;
+  ctx.strokeRect(25, 25, 1150, 800);
 
-        // Iniciar quando a página carregar
-        document.addEventListener('DOMContentLoaded', initApp);
-    </script>
+  // Borda interna mais fina
+  ctx.lineWidth = 3;
+  ctx.strokeRect(45, 45, 1110, 760);
+
+  // Linha decorativa superior
+  ctx.beginPath();
+  ctx.moveTo(180, 130);
+  ctx.lineTo(1020, 130);
+  ctx.strokeStyle = "#c9a227";
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+
+  // ===== LOGO / COROA =====
+  ctx.beginPath();
+  ctx.arc(600, 95, 32, 0, Math.PI * 2);
+  ctx.strokeStyle = "#c9a227";
+  ctx.lineWidth = 2.5;
+  ctx.stroke();
+
+  ctx.font = "28px serif";
+  ctx.fillStyle = "#c9a227";
+  ctx.textAlign = "center";
+  ctx.fillText("♛", 600, 105);
+
+  // ===== TÍTULO =====
+  ctx.fillStyle = "#1a1620";
+  ctx.font = "bold 36px Georgia, serif";
+  ctx.fillText("INSTITUTO LUYARA", 600, 175);
+
+  ctx.fillStyle = "#8a7f72";
+  ctx.font = "14px Georgia, serif";
+  ctx.fillText("ESCOLA DE PUTIFERAGEM  •  TRADIÇÃO E EXCELÊNCIA", 600, 205);
+
+  // ===== TEXTO PRINCIPAL =====
+  ctx.fillStyle = "#1a1620";
+  ctx.font = "20px Georgia, serif";
+  ctx.fillText("Certificamos que", 600, 290);
+
+  // Nome do aluno (grande)
+  const nome = aluno.nome.toUpperCase();
+  let fontSize = 56;
+  if (nome.length > 14) fontSize = 46;
+  if (nome.length > 18) fontSize = 38;
+  if (nome.length > 22) fontSize = 32;
+
+  ctx.fillStyle = "#3d2b5a";
+  ctx.font = `bold ${fontSize}px Georgia, serif`;
+  ctx.fillText(nome, 600, 360);
+
+  // Texto de conclusão
+  ctx.fillStyle = "#1a1620";
+  ctx.font = "19px Georgia, serif";
+  ctx.fillText("concluiu com êxito a formação em Putiferagem", 600, 420);
+  ctx.fillText("e está apto(a) a carregar a tradição Luyara.", 600, 450);
+
+  // Linha decorativa
+  ctx.beginPath();
+  ctx.moveTo(420, 490);
+  ctx.lineTo(780, 490);
+  ctx.strokeStyle = "#c9a227";
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  // Data
+  const hoje = new Date();
+  const dataFormatada = hoje.toLocaleDateString("pt-BR", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric"
+  });
+
+  ctx.fillStyle = "#8a7f72";
+  ctx.font = "16px Georgia, serif";
+  ctx.fillText(dataFormatada, 600, 540);
+
+  // ===== ASSINATURA =====
+  ctx.beginPath();
+  ctx.moveTo(480, 680);
+  ctx.lineTo(720, 680);
+  ctx.strokeStyle = "#c9a227";
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  ctx.fillStyle = "#3d2b5a";
+  ctx.font = "italic 22px Georgia, serif";
+  ctx.fillText("Luyara Grazielle", 600, 710);
+
+  ctx.fillStyle = "#8a7f72";
+  ctx.font = "14px Georgia, serif";
+  ctx.fillText("Direção Acadêmica • Instituto Luyara", 600, 735);
+
+  // Download
+  const link = document.createElement("a");
+  link.download = `Diploma_Luyara_${aluno.nome.replace(/\s+/g, "_")}.png`;
+  link.href = canvas.toDataURL("image/png", 1.0);
+  link.click();
+}
+
+/* ====================== UTILS ====================== */
+function closeModal(id) {
+  document.getElementById(id).classList.remove("show");
+}
+
+function toggleSidebar() {
+  document.getElementById("sidebar").classList.toggle("open");
+}
+
+function setActive(el) {
+  document.querySelectorAll(".side-nav a").forEach(a => a.classList.remove("active"));
+  el.classList.add("active");
+  if (window.innerWidth < 900) {
+    document.getElementById("sidebar").classList.remove("open");
+  }
+}
+
+// Fecha modal clicando fora
+document.querySelectorAll(".modal").forEach(m => {
+  m.addEventListener("click", e => {
+    if (e.target === m) m.classList.remove("show");
+  });
+});
+
+init();
+</script>
 </body>
 </html>
